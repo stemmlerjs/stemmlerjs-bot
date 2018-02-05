@@ -1,0 +1,6 @@
+
+# Twitter Bot Connection String
+
+mongodb:
+  connection_string: mongodb://localhost/twitter
+interests: ['javascript', 'music', 'web audio api', 'react']

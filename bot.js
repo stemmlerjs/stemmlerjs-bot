@@ -1,8 +1,29 @@
 
-const Twit = require('twit');
-const config = require('./config')
-const T = new Twit(config)
+/*
+ * Bot
+ */
 
+const twit = require('twit');
+const config = require('./config');
+const Twit = twit(config)
+const Event = require('./models').Event;
+
+let botInstance = null;
+
+module.exports = {
+
+  // Static
+  getInstance: () => {
+    if (!botInstance) {
+      botInstance = new Bot();
+      return botInstance;
+    }
+
+    else {
+      return botInstance;
+    }
+  }
+}
 
 /*
  * Bot class.
@@ -10,18 +31,45 @@ const T = new Twit(config)
  * This class is responsible for
  * all of the actuation. No logic, no planning, no scheduling,
  * just actuation.
- * 
  */
 
 class Bot {
+  
   constructor () {
-    this.twitter = "yeah"
+
   }
 
-
   // Tweet a new status
-  tweetStatus () {
-    var self = this;
+  tweetStatus (message) {
+
+    var tweet = {
+      status: message
+    }
+
+    Twit.post('statuses/update', tweet, tweeted);
+
+    function tweeted(err, data, response) {
+      if (err) {
+        console.log("somehting went wrong")
+        console.log(err);
+        console.log()
+
+        Event.collection.insertOne({
+          name: 'TWEET',
+          success: false,
+          meta: err
+        })
+      }
+
+      else {
+        console.log("Successfully posted tweet");
+        Event.collection.insertOne({
+          name: 'TWEET',
+          success: true,
+          meta: data
+        })
+      }
+    }
 
   }
 
@@ -36,9 +84,7 @@ class Bot {
   follow (handle) {
     var self = this;
 
-    // var followAction = new FollowAction(T, handle)
-    // console.log(followAction)
-    T.post('friendships/create', { id: handle },tweeted)
+    Twit.post('friendships/create', { id: handle }, tweeted)
 
     function tweeted(err, data, response) {
       if (err) {
@@ -52,6 +98,13 @@ class Bot {
       }
     }
 
+  }
+
+  getTweets (query) {
+    Twit.get('search/tweets', { q: 'query', count: 1 }, function(err, data, response) {
+      console.log(data.statuses[0])
+      console.log(data.statuses[0].user)
+    })
   }
 
   /*
@@ -87,24 +140,83 @@ class Bot {
   //
   //  choose a random friend of one of your followers, and follow that user
   //
-  mingle (callback) {
+
+  mingle () {
     var self = this;
-    
-    this.twit.get('followers/ids', function(err, reply) {
-        if(err) { return callback(err); }
+
+    /*
+     * Get my followers
+     */
+
+    Twit.get('followers/ids', (err, reply) => {
+      if(err) { 
+        Event.collection.insertOne({
+          name: 'MINGLE FOLLOW',
+          success: false,
+          meta: makeErrorObj(err, "Couldn't get my list of friends")
+        })
+      }
         
-        var followers = reply.ids
-          , randFollower  = randIndex(followers);
+        var followers = reply.ids;
+        var randFollower = randIndex(followers);
+
+        /*
+         * Get the friends list from a random rollower
+         */
           
-        self.twit.get('friends/ids', { user_id: randFollower }, function(err, reply) {
-            if(err) { return callback(err); }
+        Twit.get('friends/ids', { user_id: randFollower }, (err, reply) => {
+            if(err) { 
+              Event.collection.insertOne({
+                name: 'MINGLE FOLLOW',
+                success: false,
+                meta: makeErrorObj(err, `Couldn't get ${randFollower}'s list of friends`)
+              })
+            }
             
             var friends = reply.ids
-              , target  = randIndex(friends);
+            var target  = randIndex(friends);
+
+            /*
+             * Follow one of the random friends that is following
+             * my friend.
+             */
               
-            self.twit.post('friendships/create', { id: target }, callback); 
+            Twit.post('friendships/create', { id: target }, (err, data, response) => {
+
+              /*
+               * Failed to follow a friend of a friend.
+               */
+
+              if (err) {
+                Event.collection.insertOne({
+                  name: 'MINGLE FOLLOW',
+                  success: false,
+                  meta: makeErrorObj(err, `Couldn't follow ${target}. `)
+                })
+              }
+
+              else {
+
+                Event.collection.insertOne({
+                  name: 'MINGLE FOLLOW',
+                  success: true,
+                  meta: data
+                })
+
+                console.log(`[Mingle Follow]: Followed @${data.screen_name}.`)
+              }
+
+            }); 
           })
       })
+  }
+}
+
+function makeErrorObj (err, message) {
+  console.log(message);
+  return {
+    err: err,
+    message: message
   }
 }
 
