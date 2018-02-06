@@ -3,4 +3,19 @@
 
 mongodb:
   connection_string: mongodb://localhost/twitter
-interests: ['javascript', 'music', 'web audio api', 'react']
+
+layers:
+
+  # Layer 4
+  search:
+    search_keywords: ['javascript', 'post-punk', 'web audio api', 'reactjs', 'kanye', 'webdev']
+    seed_accounts: ['@dan_abramov', '@reactjs', '@nodejs', '@JavaScriptDaily']
+    range:
+      enabled: false
+      location: [ '-122.75', '36.8', '-121.75', '37.8' ] # San Francisco
+    logging: true
+  
+  decision:
+    # Better chance to follow the user if they have following_follower_ratio greater than this.
+    min_following_follower_ratio: 1
+    logging: true

@@ -1,24 +1,26 @@
 
 const Bot = require('./bot');
+const SearchLayer = require('./search')
 const config = require('./config');
 
 // Get instance of bot
 const botInstance = Bot.getInstance();
+const searchLayerInstance = SearchLayer.getInstance();
 
 function startup () {
   config.mongo.init()
     .then(run)
-    .catch(error)
+    .catch(startupError)
 }
 
 function run () {
 
   // botInstance.tweetStatus('')
   // botInstance.mingle();
-  botInstance.getTweets('The Pop Group')
+  // botInstance.getTweets('Nick Cave')
 }
 
-function error (err) {
+function startupError (err) {
   console.log(err);
 }
 
