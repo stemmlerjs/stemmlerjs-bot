@@ -1,11 +1,13 @@
 
-const Bot = require('./bot');
+
 const SearchLayer = require('./search')
+const ScheduleLayer = require('./schedule')
 const config = require('./config');
 
 // Get instance of bot
-const botInstance = Bot.getInstance();
+
 const searchLayerInstance = SearchLayer.getInstance();
+const scheduleLayerInstance = ScheduleLayer.getInstance();
 
 function startup () {
   config.mongo.init()
@@ -14,6 +16,9 @@ function startup () {
 }
 
 function run () {
+
+  searchLayerInstance.run();
+  scheduleLayerInstance.run();
 
   // botInstance.tweetStatus('')
   // botInstance.mingle();

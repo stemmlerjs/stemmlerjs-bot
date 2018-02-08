@@ -47,8 +47,14 @@ class SearchLayer {
     // Seed accounts that we really like that are related to our interests.
     this.seedAccounts = layerConfig.seed_accounts;
 
+    
+  }
+
+  run () {
+
     // Setup the event listeners to perform the stream search by keyword.
     this.initStreams();
+
   }
 
   /*
@@ -79,8 +85,9 @@ class SearchLayer {
           let userScreenName = t.user.screen_name;
           let userFollowers = t.user.followers_count;
           let userFollowing = t.user.friends_count;
+          let userProfileDescription = t.user.description ? t.user.description : "";
 
-          let tweet = new Tweet(text, createdAt, id, userId, userScreenName, userFollowers, userFollowing, keyword);
+          let tweet = new Tweet(text, createdAt, id, userId, userScreenName, userFollowers, userFollowing, userProfileDescription, keyword);
 
           if (_this.logging) _this.printTweet(tweet);
           

@@ -8,15 +8,21 @@ layers:
 
   # Layer 4
   search:
-    search_keywords: ['javascript', 'post-punk', 'web audio api', 'reactjs', 'kanye', 'webdev', 'ECMAScript', 'asynchronous', 'nodejs']
+    search_keywords: ['javascript', 'post-punk', 'web audio api', 'reactjs', 'remote developer', 'webdev', 'ECMAScript', 'asynchronous', 'nodejs']
     seed_accounts: ['@dan_abramov', '@reactjs', '@nodejs', '@JavaScriptDaily']
     range:
       enabled: false
       location: [ '-122.75', '36.8', '-121.75', '37.8' ] # San Francisco
-    logging: true
+    logging: false
   
+  # Layer 3
   decision:
     # Better chance to follow the user if they have following_follower_ratio greater than this.
     min_following_follower_ratio: 1
+    points_thresh: 2
     logging: true
     bad_words_filter: ['fuck', 'shit', 'ass', 'piss', 'cunt', 'suck', 'sex', 'porn', 'hot', 'babe', 'xxx', 'cum', 'cock', 'pussy', 'horny', 'nigga', 'nasty', 'pornhub', 'drugs', 'vagina', 'hate']
+
+  # Layer 2
+  schedule:
+    logging: true

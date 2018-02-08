@@ -14,6 +14,9 @@ const config = require('config-yml');
 const layerConfig = config.layers.decision;
 const searchKeywords = config.layers.search.search_keywords
 
+const ScheduleLayer = require('./schedule')
+const scheduleLayerInstance = ScheduleLayer.getInstance();
+
 let decisionLayerInstance = null;
 
 module.exports = {
@@ -40,6 +43,7 @@ class DecisionLayer extends EventEmitter {
     this.followerFollowingRatio = layerConfig.min_following_follower_ratio;
     this.badWordsFilter = layerConfig.bad_words_filter;
     this.searchKeywords = searchKeywords;
+    this.pointsThresh = layerConfig.points_thresh;
 
     // When a tweet comes in, handle that event.
     this.on('tweet', this.onTweet);
@@ -63,7 +67,7 @@ class DecisionLayer extends EventEmitter {
 
     console.log("OK, let's make a decision on this tweet")
 
-    let points = 0;
+    let points = 1;
 
     // Prefilter: Are there any bad words? (if yes, ditch it)
     if(_this.hasBadWords(tweet)) return;
@@ -75,24 +79,87 @@ class DecisionLayer extends EventEmitter {
     points += _this.getFollowRatioPoints(tweet);
 
     // C: Does the user have any of the keywords in his account? (big points if so)
-    
+    points += _this.getProfileKeywordPoints(tweet);    
 
-    // D: 
+    console.log(`This tweet was awarded [${points}] points!\n`)
+
+    // Finally, handle what to do with this tweet based on the points awarded.
+    _this.makeDecision(tweet, points);
 
   }
 
+  makeDecision(tweet, points) {
 
+    /*
+     * If the tweet is greater than points thresh, we will
+     * do an action with it for now.
+     */
+
+    if (points >= this.pointsThresh) {
+      this.send(tweet)
+    }
+
+
+  }
+
+  /*
+   * getProfileKeywordPoints
+   */
+
+  getProfileKeywordPoints (tweet) {
+    const userProfileDescription = tweet.userProfileDescription;
+
+    let keywordPoints = 0;
+
+    for(var i = 0; i < this.searchKeywords; i++) {
+      if (~userProfileDescription
+          .toUpperCase()
+          .indexOf(
+            this.searchKeywords[i]
+              .toUpperCase())) keywordPoints = keywordPoints + 1
+    }
+
+    return keywordPoints;
+
+  }
+
+  /*
+   * getFollowRatioPoints
+   * 
+   * Awarding based on follow ratio.
+   */
 
   getFollowRatioPoints (tweet) {
 
     var userFollowers = tweet.userFollowers;
     var userFollowing = tweet.userFollowing;
-
     const ratio = userFollowing / userFollowers;
+
+    let points = 0;
+
+    /*
+     * A: In this case, the user has no followers.
+     * There's a good chance that this is a bot or something. 
+     * 
+     * Let's not award any points for this.
+     */
+    
+    if (ratio == undefined) {
+      return points;
+    }
+
+    /*
+     * B: Good! The user follows more people than they have following them.
+     * This means that they're probably someone that will follow us back.
+     */
+
+    if (ratio >= this.followerFollowingRatio) {
+      points+= Math.round(ratio);
+    }    
 
     console.log("Ratio: ", ratio)
 
-    return ratio
+    return points;
 
   }
 
@@ -106,7 +173,11 @@ class DecisionLayer extends EventEmitter {
     let keywordPoints = 0;
 
     for(var i = 0; i < this.searchKeywords; i++) {
-      if (!tweet.text.indexOf(this.searchKeywords[i])) keywordPoints++;
+      if (~tweet.text
+        .toUpperCase()
+        .indexOf(
+          this.searchKeywords[i]
+            .toUpperCase())) keywordPoints = keywordPoints + 1;
     }
 
     return keywordPoints;
@@ -126,6 +197,20 @@ class DecisionLayer extends EventEmitter {
     }
 
     return false;
+  }
+
+  /*
+   * send
+   * 
+   * This function simply sends the tweet that was found in the stream to
+   * the decision layer to decide what to do with it.
+   * 
+   * @param {Tweet} - the tweet that we want to send to the decision layer to make a decision.
+   * @return void
+   */
+
+  send(tweet) {
+    scheduleLayerInstance.emit('schedule', tweet);
   }
   
 }

@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var EventSchema = Schema({
     name: { type: String, required: true, index: { unique: false }},
-    success: { type: Boolean, required: true },
+    state: { type: String },
     meta: Object,
     created_at    : { type: Date, required: true, default: Date.now }
 })

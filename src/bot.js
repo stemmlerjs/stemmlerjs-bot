@@ -56,7 +56,7 @@ class Bot {
 
         Event.collection.insertOne({
           name: 'TWEET',
-          success: false,
+          state: 'QUEUED',
           meta: err
         })
       }
@@ -65,7 +65,7 @@ class Bot {
         console.log("Successfully posted tweet");
         Event.collection.insertOne({
           name: 'TWEET',
-          success: true,
+          state: 'QUEUED',
           meta: data
         })
       }
@@ -94,7 +94,7 @@ class Bot {
       }
 
       else {
-          console.log("success followed")
+        console.log("success followed")
       }
     }
 
