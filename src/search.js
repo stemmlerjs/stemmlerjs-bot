@@ -38,6 +38,8 @@ class SearchLayer {
   constructor() {
     // Keywords to search for.
     this.searchKeywords = layerConfig.search_keywords;
+
+    this.streams = [];
     
     // Configure logging
     this.logging = layerConfig.logging;
@@ -52,6 +54,10 @@ class SearchLayer {
   /*
    * initStreams
    * 
+   * Initializes all of the streams for the search layer.
+   * Each stream is an event listener that is placed into the list
+   * of streams.
+   * 
    * @return void
    */
 
@@ -62,6 +68,8 @@ class SearchLayer {
       (function () {
         
         let stream = Twit.stream('statuses/filter', { track: keyword, language: 'en' })
+
+        _this.streams.push(stream);
         
         stream.on('tweet', function (t) {
           let text = t.text;
@@ -94,7 +102,6 @@ class SearchLayer {
    */
 
   send(tweet) {
-    console.log("Got a tweet to send")
     decisionLayerInstance.emit('tweet', tweet);
   }
 

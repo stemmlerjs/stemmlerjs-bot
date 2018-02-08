@@ -8,7 +8,7 @@ class Tweet {
     this.text = text;
     this.createdAt = createdAt;
     this.id = id;
-    this.userId;
+    this.userId = userId;
     this.userScreenName = userScreenName;
     this.userFollowers = userFollowers;
     this.userFollowing = userFollowing;
