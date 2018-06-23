@@ -1,33 +1,48 @@
 
+// Init the application
+// src/index.js
 
-const SearchLayer = require('./search')
-const ScheduleLayer = require('./schedule')
-const config = require('./config');
+const LayersConfigYML = require('config-yml');
+const Twit = require('./config').twitter;
+const Models = require('./models');
+const Search = require('./search')({
+  models: Models,
+  twit: Twit,
+  options: LayersConfigYML.layers.search
+})
 
-// Get instance of bot
+// // const ScheduleLayer = require('./schedule')
+// const config = require('./config');
 
-const searchLayerInstance = SearchLayer.getInstance();
-const scheduleLayerInstance = ScheduleLayer.getInstance();
+// // Get instance of bot
 
-function startup () {
-  config.mongo.init()
-    .then(run)
-    .catch(startupError)
-}
+// const searchLayerInstance = SearchLayer.getInstance();
+// // const scheduleLayerInstance = ScheduleLayer.getInstance();
 
-function run () {
+// // function startup () {
+// //   config.mongo.init()
+// //     .then(run)
+// //     .catch(startupError)
+// // }
 
-  searchLayerInstance.run();
-  scheduleLayerInstance.run();
+// // function run () {
 
-  // botInstance.tweetStatus('')
-  // botInstance.mingle();
-  // botInstance.getTweets('Nick Cave')
-}
+//   searchLayerInstance.run();
+//   scheduleLayerInstance.run();
 
-function startupError (err) {
-  console.log(err);
-}
+//   // botInstance.tweetStatus('')
+//   // botInstance.mingle();
+//   // botInstance.getTweets('Nick Cave')
+// }
 
-// Start
-startup();
+// function startupError (err) {
+//   console.log(err);
+// }
+
+// // Start
+// startup();
+
+/**
+ * search layer
+ * - searches for tweets with 
+ */

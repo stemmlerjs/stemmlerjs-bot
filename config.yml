@@ -8,7 +8,7 @@ layers:
 
   # Layer 4
   search:
-    search_keywords: ['javascript', 'post-punk', 'web audio api', 'reactjs', 'remote developer', 'webdev', 'ECMAScript', 'asynchronous', 'nodejs']
+    keywords: ['beyonce', 'javascript', 'post-punk', 'web audio api', 'reactjs', 'remote developer', 'webdev', 'ECMAScript', 'asynchronous', 'nodejs']
     seed_accounts: ['@dan_abramov', '@reactjs', '@nodejs', '@JavaScriptDaily']
     range:
       enabled: false
@@ -21,7 +21,11 @@ layers:
     min_following_follower_ratio: 1
     points_thresh: 2
     logging: true
-    bad_words_filter: ['fuck', 'shit', 'ass', 'piss', 'cunt', 'suck', 'sex', 'porn', 'hot', 'babe', 'xxx', 'cum', 'cock', 'pussy', 'horny', 'nigga', 'nasty', 'pornhub', 'drugs', 'vagina', 'hate']
+    bad_words_filter: [
+      'fuck', 'shit', 'ass', 'piss', 'cunt', 'suck', 'sex', 
+      'porn', 'hot', 'babe', 'xxx', 'cum', 'cock', 'pussy', 
+      'horny', 'nigga', 'nasty', 'pornhub', 'drugs', 
+      'vagina', 'hate']
 
   # Layer 2
   schedule:

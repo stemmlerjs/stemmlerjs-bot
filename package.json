@@ -19,6 +19,8 @@
     "express": "^4.16.2",
     "jsonfile": "^4.0.0",
     "mongoose": "^5.0.3",
+    "sequelize": "^4.38.0",
+    "sqlite3": "^4.0.0",
     "twit": "^2.2.9"
   }
 }
