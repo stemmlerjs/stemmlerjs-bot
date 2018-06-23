@@ -13,7 +13,7 @@ layers:
     range:
       enabled: false
       location: [ '-122.75', '36.8', '-121.75', '37.8' ] # San Francisco
-    logging: false
+    logging: true
   
   # Layer 3
   decision:
@@ -25,4 +25,8 @@ layers:
 
   # Layer 2
   schedule:
+    logging: true
+
+  # Layer 1
+  actuation:
     logging: true

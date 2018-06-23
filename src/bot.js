@@ -36,7 +36,7 @@ module.exports = {
 class Bot {
   
   constructor () {
-
+    this.layerConfig = config.actuation;
   }
 
   // Tweet a new status
@@ -88,16 +88,16 @@ class Bot {
 
     function tweeted(err, data, response) {
       if (err) {
-          console.log("somehting went wrong")
+          console.log("[FOLLOW]: Failed to follow @" + handle)
           console.log(err);
           console.log()
       }
 
       else {
-        console.log("success followed")
+        console.log(`[FOLLOW]: Successfully followed @${handle}`);
+        console.log("")
       }
     }
-
   }
 
   getTweets (query) {
@@ -113,18 +113,31 @@ class Bot {
 
   prune (callback) {
     var self = this;
+
+    /*
+     * Get a list of all my followers
+     */
     
-    this.twit.get('followers/ids', function(err, reply) {
+    this.twit.get('followers/ids', function (err, reply) {
         if(err) return callback(err);
         
         var followers = reply.ids;
         
+        /*
+         * Get a list of all the people I follow.
+         */
+
         self.twit.get('friends/ids', function(err, reply) {
             if(err) return callback(err);
             
             var friends = reply.ids
               , pruned = false;
             
+
+            /*
+             * Find one person who doesn't follow me back and unfollow them.
+             */
+
             while(!pruned) {
               var target = randIndex(friends);
               

@@ -51,7 +51,7 @@ class Queue {
            * Update this event to be leaved.
            */
 
-          console.log("about to leave")
+          console.log("[QUEUE]: Just poppped a new event off the queue to be executed.")
 
           if (event[0]) {
             _this.leave(event[0].id);

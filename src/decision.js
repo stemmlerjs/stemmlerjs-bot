@@ -67,7 +67,7 @@ class DecisionLayer extends EventEmitter {
 
     console.log("OK, let's make a decision on this tweet")
 
-    let points = 1;
+    let points = 0;
 
     // Prefilter: Are there any bad words? (if yes, ditch it)
     if(_this.hasBadWords(tweet)) return;
